@@ -19,24 +19,22 @@ Also reduces:
 - Runtime memory allocations
 - Attack surface
 
-Usage: Build with 'make ADBD_MINIMAL=1' or add to CPPFLAGS:
-  CPPFLAGS+= -DADBD_MINIMAL
+Usage: Build with 'make ADBD_MINIMAL=1'
 
 Signed-off-by: Buildroot User <user@example.com>
 ---
  debian/makefiles/adbd.mk | 21 +++++++++++++++------
  1 file changed, 15 insertions(+), 6 deletions(-)
 
-diff --git a/debian/makefiles/adbd.mk b/debian/makefiles/adbd.mk
-index abcd123..efgh456 100644
---- a/debian/makefiles/adbd.mk
-+++ b/debian/makefiles/adbd.mk
-@@ -18,20 +18,29 @@ SRCS+= load_file.c
+--- a/debian/makefiles/adbd.mk	2026-03-29 11:16:59.607254883 +0800
++++ b/debian/makefiles/adbd.mk	2026-03-29 11:18:14.794649225 +0800
+@@ -13,23 +13,29 @@
  SRCS+= android_reboot.c
  
  #VPATH+= ../adb
- SRCS+=  adb.c
+-SRCS+=  adb.c
 -SRCS+=	backup_service.c
++SRCS+=	adb.c
  SRCS+=	fdevent.c
  SRCS+=	transport.c
 -SRCS+=	transport_local.c
@@ -44,28 +42,25 @@ index abcd123..efgh456 100644
  SRCS+=	adb_auth_client.c
  SRCS+=	sockets.c
  SRCS+=	services.c
--SRCS+=	file_sync_service.c
--SRCS+=	jdwp_service.c
--SRCS+=	framebuffer_service.c
--SRCS+=	remount_service.c
- SRCS+=	usb_linux_client.c
--SRCS+=	log_service.c
- SRCS+=	utils.c
- SRCS+=	base64.c
- 
++SRCS+=	usb_linux_client.c
++SRCS+=	utils.c
++SRCS+=	base64.c
++
 +# Minimal build excludes these services when ADBD_MINIMAL is set
 +ifeq ($(ADBD_MINIMAL),1)
 +CPPFLAGS+= -DADBD_MINIMAL
 +else
 +SRCS+=	backup_service.c
-+SRCS+=	file_sync_service.c
-+SRCS+=	jdwp_service.c
-+SRCS+=	framebuffer_service.c
-+SRCS+=	remount_service.c
-+SRCS+=	log_service.c
+ SRCS+=	file_sync_service.c
+ SRCS+=	jdwp_service.c
+ SRCS+=	framebuffer_service.c
+ SRCS+=	remount_service.c
+-SRCS+=	usb_linux_client.c
+ SRCS+=	log_service.c
+-SRCS+=	utils.c
+-SRCS+=	base64.c
 +SRCS+=	transport_local.c
 +endif
-+
+ 
  VPATH+= ../libzipfile
  SRCS+= centraldir.c
- SRCS+= zipfile.c
