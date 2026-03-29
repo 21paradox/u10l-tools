@@ -76,7 +76,7 @@ jobs:
         BR2_GCC_VERSION_12_X=y
         
         # Memory optimization flags (minimal adbd: disable push/pull with -DADBD_MINIMAL)
-        BR2_TARGET_OPTIMIZATION="-Os -ffunction-sections -fdata-sections -fomit-frame-pointer -DADBD_MINIMAL"
+        BR2_TARGET_OPTIMIZATION="-Os -ffunction-sections -fdata-sections -fomit-frame-pointer -DADBD_MINIMAL -O2 -fno-unwind-tables -fno-asynchronous-unwind-tables"
         BR2_TARGET_LDFLAGS="-Wl,--gc-sections -Wl,--strip-all"
         
         # Don't build target packages, just toolchain
