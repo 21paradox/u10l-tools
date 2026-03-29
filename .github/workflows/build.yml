@@ -48,12 +48,15 @@ jobs:
         wget -q https://buildroot.org/downloads/buildroot-${BUILDROOT_VERSION}.tar.xz
         tar -xf buildroot-*.tar.xz
         
-        # Copy minimal adbd patch to buildroot package directory
+        # Copy minimal adbd patches to buildroot package directory
         cp  ${{ github.workspace }}/0011-adbd-minimal-usb-shell-only.patch \
             ${{ github.workspace }}/0012-adbd-reduce-max-payload.patch \
             ${{ github.workspace }}/0013-adbd-disable-trace.patch \
-            ${{ github.workspace }}/0014-adbd-minimal-makefile.patch \
           ~/buildroot-${BUILDROOT_VERSION}/package/android-tools/
+        
+        # Copy minimal adbd.mk for overriding
+        cp ${{ github.workspace }}/adbd-minimal.mk ~/buildroot-${BUILDROOT_VERSION}/package/android-tools/
+        cp ${{ github.workspace }}/android-tools.mk ~/buildroot-${BUILDROOT_VERSION}/package/android-tools/
         
     - name: Configure buildroot for ARMv7 + musl + soft-float
       if: steps.buildroot-cache.outputs.cache-hit != 'true'
@@ -103,6 +106,11 @@ jobs:
         EOF
         
         make olddefconfig
+        
+    # - name: Add post-extract hook to override adbd.mk
+    #   if: steps.buildroot-cache.outputs.cache-hit != 'true'
+    #   run: |
+    #     cd ~/buildroot-${BUILDROOT_VERSION}
         
     - name: Build toolchain and adbd (this may take 20-40 minutes)
       if: steps.buildroot-cache.outputs.cache-hit != 'true'
