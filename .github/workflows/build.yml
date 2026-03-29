@@ -39,7 +39,7 @@ jobs:
       id: buildroot-cache
       with:
         path: ~/buildroot-${{ env.BUILDROOT_VERSION }}
-        key: buildroot-${{ env.BUILDROOT_VERSION }}-armv7-musl-softfloat-v1.4-minimal
+        key: buildroot-${{ env.BUILDROOT_VERSION }}-armv7-musl-softfloat-v1.5-minimal
         
     - name: Download and extract buildroot
       if: steps.buildroot-cache.outputs.cache-hit != 'true'
