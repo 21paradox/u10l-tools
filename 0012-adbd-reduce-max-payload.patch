@@ -1,0 +1,37 @@
+[PATCH] adbd: reduce MAX_PAYLOAD for minimal build
+
+Reduce MAX_PAYLOAD from 4096 to 1024 when ADBD_MINIMAL is defined
+to significantly reduce per-packet memory allocation.
+
+This is one of the most effective ways to reduce adbd's runtime
+memory footprint. Each apacket structure contains a data buffer
+of MAX_PAYLOAD bytes. With heavy ADB traffic, many packets may
+be allocated simultaneously. Reducing this from 4KB to 1KB saves
+3KB per packet.
+
+For minimal USB shell-only use case, 1024 bytes is more than
+sufficient since shell traffic typically consists of small
+command/response chunks.
+
+Signed-off-by: Buildroot User <user@example.com>
+---
+ core/adb/adb.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/core/adb/adb.h b/core/adb/adb.h
+index abcd123..efgh456 100644
+--- a/core/adb/adb.h
++++ b/core/adb/adb.h
+@@ -21,7 +21,12 @@
+ 
+ #include "transport.h"  /* readx(), writex() */
+ 
++#ifdef ADBD_MINIMAL
++/* Reduce payload size to save memory in minimal mode */
++#define MAX_PAYLOAD 1024
++#else
+ #define MAX_PAYLOAD 4096
++#endif
+ 
+ #define A_SYNC 0x434e5953
+ #define A_CNXN 0x4e584e43

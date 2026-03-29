@@ -1,0 +1,36 @@
+[PATCH] adbd: disable ADB_TRACE in minimal mode
+
+Disable ADB tracing support when ADBD_MINIMAL is defined.
+This removes:
+- Debug tracing code and macros
+- Trace mask handling
+- Mutex for trace output locking
+- Reduces code size and removes runtime overhead
+
+The tracing functionality is mainly useful for development
+and debugging, but adds unnecessary overhead for production
+embedded systems with limited resources.
+
+Usage: Add -DADBD_MINIMAL to CPPFLAGS when building adbd
+
+Signed-off-by: Buildroot User <user@example.com>
+---
+ core/adb/adb.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/adb/adb.h b/core/adb/adb.h
+index abcd123..efgh456 100644
+--- a/core/adb/adb.h
++++ b/core/adb/adb.h
+@@ -340,7 +340,11 @@ int backup_service(BackupOperation operation, char* args);
+ 
+ /* define ADB_TRACE to 1 to enable tracing support, or 0 to disable it */
+ 
++#ifdef ADBD_MINIMAL
++#define  ADB_TRACE    0
++#else
+ #define  ADB_TRACE    1
++#endif
+ 
+ /* IMPORTANT: if you change the following list, don't
+  * forget to update the corresponding 'tags' table in
