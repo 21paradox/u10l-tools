@@ -1,0 +1,12 @@
+diff --git a/core/adbd/sysdeps.h b/core/adbd/sysdeps.h
+index 0252ef3..2f5a251 100644
+--- a/core/adbd/sysdeps.h
++++ b/core/adbd/sysdeps.h
+@@ -441,6 +441,7 @@ static __inline__ int  adb_thread_create( adb_thread_t  *pthread, adb_thread_fun
+ 
+     pthread_attr_init (&attr);
+     pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_DETACHED);
++    pthread_attr_setstacksize(&attr, 512 * 1024);
+ 
+     return pthread_create( pthread, &attr, start, arg );
+ }
