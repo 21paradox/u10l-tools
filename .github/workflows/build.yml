@@ -39,7 +39,7 @@ jobs:
       id: buildroot-cache
       with:
         path: ~/buildroot-${{ env.BUILDROOT_VERSION }}
-        key: buildroot-${{ env.BUILDROOT_VERSION }}-armv7-musl-softfloat-v1.8-minimal
+        key: buildroot-${{ env.BUILDROOT_VERSION }}-armv7-musl-softfloat-v1.9-minimal
         
     - name: Download and extract buildroot
       if: steps.buildroot-cache.outputs.cache-hit != 'true'
@@ -49,8 +49,7 @@ jobs:
         tar -xf buildroot-*.tar.xz
         
         # Copy minimal adbd patches to buildroot package directory
-        cp ${{ github.workspace }}/0011-adbd-minimal-usb-shell-only.patch \
-          ${{ github.workspace }}/0013-adbd-disable-trace.patch \
+        cp ${{ github.workspace }}/0013-adbd-disable-trace.patch \
           ${{ github.workspace }}/0014-adbd-pthread.patch \
           ~/buildroot-${BUILDROOT_VERSION}/package/android-tools/
         
