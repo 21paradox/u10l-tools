@@ -264,6 +264,43 @@ jobs:
         echo "=== tcpdump static binary info ==="
         file ${{ github.workspace }}/tcpdump-static
         ${{ env.TOOLCHAIN_PATH }}/bin/${{ env.GCC_PREFIX }}-readelf -d ${{ github.workspace }}/tcpdump-static | grep NEEDED || echo "No dynamic dependencies - fully static!"
+
+    - name: Static build iperf3
+      run: |
+        # Set toolchain
+        export CROSS_COMPILE=${{ env.GCC_PREFIX }}-
+        export PATH=${{ env.TOOLCHAIN_PATH }}/bin:$PATH
+        CC=${{ env.TOOLCHAIN_PATH }}/bin/${{ env.GCC_PREFIX }}-gcc
+        
+        IPERF3_VERSION=3.17.1
+        cd /tmp
+        wget -q https://downloads.es.net/pub/iperf/iperf-${IPERF3_VERSION}.tar.gz
+        tar -xzf iperf-${IPERF3_VERSION}.tar.gz
+        cd iperf-${IPERF3_VERSION}
+        
+        # Configure iperf3 for static build
+        CC=$CC \
+        ./configure \
+          --host=arm-linux \
+          --prefix=/tmp/iperf3-install \
+          --disable-shared \
+          --enable-static \
+          --without-openssl \
+          CFLAGS="-mfloat-abi=soft -Os" \
+          LDFLAGS="-static"
+        
+        make -j$(nproc)
+        make install
+        
+        # Strip binary
+        ${{ env.TOOLCHAIN_PATH }}/bin/${{ env.GCC_PREFIX }}-strip /tmp/iperf3-install/bin/iperf3
+        
+        # Copy to workspace
+        cp /tmp/iperf3-install/bin/iperf3 ${{ github.workspace }}/iperf3-static
+        
+        echo "=== iperf3 static binary info ==="
+        file ${{ github.workspace }}/iperf3-static
+        ${{ env.TOOLCHAIN_PATH }}/bin/${{ env.GCC_PREFIX }}-readelf -d ${{ github.workspace }}/iperf3-static | grep NEEDED || echo "No dynamic dependencies - fully static!"
         
     - name: Copy adbd from buildroot output
       run: |
@@ -311,4 +348,5 @@ jobs:
           mkswap
           tcpdump-static
           curl-static
+          iperf3-static
           adbd
